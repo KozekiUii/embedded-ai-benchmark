@@ -41,8 +41,12 @@ def build(onnx_path, engine_path, precision, workspace_mb, calibrator=None):
         config.set_flag(trt.BuilderFlag.FP16)
     elif precision == "int8":
         config.set_flag(trt.BuilderFlag.INT8)
+        # 同时开 FP16：让 builder 逐层在 int8/fp16/fp32 里选最快 tactic。
+        # Pascal(sm_62) 无 INT8 Tensor Core，部分层 INT8 不占优，有 FP16 兜底更快。
+        if builder.platform_has_fast_fp16:
+            config.set_flag(trt.BuilderFlag.FP16)
         if calibrator is None:
-            print("[warn] INT8 without calibrator -> 精度会崩，第 4 周接 calibrator.py")
+            print("[warn] INT8 without calibrator -> 精度会崩")
         else:
             config.int8_calibrator = calibrator
 

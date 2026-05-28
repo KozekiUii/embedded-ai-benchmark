@@ -28,18 +28,12 @@ INA_DIR = "/sys/devices/3180000.i2c/i2c-2/2-0040/iio:device0"
 
 
 def read_power_mw():
-    """读 INA 三路功耗之和(mW)。读不到返回 None。"""
-    total = 0
-    found = False
-    for i in range(3):
-        p = os.path.join(INA_DIR, "in_power%d_input" % i)
-        try:
-            with open(p) as f:
-                total += int(f.read().strip())
-                found = True
-        except Exception:
-            return None
-    return total if found else None
+    """读整机输入功耗 VDD_IN(mW)。ch0=VDD_IN 已含 CPU_GPU/SOC，不能求和。读不到返回 None。"""
+    try:
+        with open(os.path.join(INA_DIR, "in_power0_input")) as f:
+            return int(f.read().strip())
+    except Exception:
+        return None
 
 
 def read_ram_used_mb():

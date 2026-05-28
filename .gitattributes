@@ -1,0 +1,8 @@
+# 统一用 LF，避免 Windows 提交 CRLF 到 Linux 设备上出问题
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.onnx binary
+*.engine binary
+*.rknn binary
+*.pt binary

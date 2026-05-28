@@ -1,0 +1,13 @@
+type: yolov8
+input_size: [640, 640]   # [H, W]
+num_classes: 80
+conf_thres: 0.25
+iou_thres: 0.45
+
+# PyTorch baseline 权重（首次运行 ultralytics 会自动下载 yolov8n.pt）
+pytorch_weight: yolov8n.pt
+
+# 转换产物路径（第 2 周用）
+onnx_path: models/onnx/yolov8n.onnx
+engine_path: models/engine/yolov8n_{precision}.engine   # TX2 NX
+rknn_path: models/rknn/yolov8n_{precision}.rknn          # RK3588

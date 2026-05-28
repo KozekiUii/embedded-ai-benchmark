@@ -1,0 +1,7 @@
+# TX2 NX 侧 (JetPack 4.6.x / Python 3.6 / CUDA 10.2)
+# tensorrt / pycuda 随 JetPack 安装，torch 用 NVIDIA 提供的 Jetson 专用 wheel，勿用 pip 默认源
+# 这里只列纯 Python 依赖：
+numpy
+opencv-python
+pyyaml
+ultralytics   # 仅 baseline / ONNX 导出用；如装不动可只在 PC 端导出 ONNX

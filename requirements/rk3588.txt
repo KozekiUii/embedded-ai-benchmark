@@ -1,0 +1,6 @@
+# RK3588 侧 (Ubuntu 22.04 / Python 3.10)
+# rknn-toolkit-lite2 用于板端推理，rknn-toolkit2 用于 PC 端模型转换（装在开发机上）
+numpy
+opencv-python
+pyyaml
+# rknn_toolkit_lite2  # 从瑞芯微官方 whl 安装，见 README

@@ -1,0 +1,24 @@
+# 模型产物 / 数据 / 结果，太大不进版本库
+models/
+data/coco_calib/
+data/samples/*.jpg
+data/samples/*.png
+results/raw/*
+results/figures/*
+!results/raw/.gitkeep
+!results/figures/.gitkeep
+
+# 运行产物（标注图等）
+out_*.jpg
+out_*.png
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.onnx
+*.engine
+*.rknn
+*.pt

@@ -81,11 +81,11 @@ class Sampler(threading.Thread):
     def __init__(self, interval=0.05):
         super().__init__(daemon=True)
         self.interval = interval
-        self._stop = threading.Event()
+        self._stop_evt = threading.Event()
         self.power, self.ram, self.temp, self.gpu = [], [], [], []
 
     def run(self):
-        while not self._stop.is_set():
+        while not self._stop_evt.is_set():
             p = read_power_mw()
             if p is not None:
                 self.power.append(p)
@@ -101,7 +101,7 @@ class Sampler(threading.Thread):
             time.sleep(self.interval)
 
     def stop(self):
-        self._stop.set()
+        self._stop_evt.set()
         self.join(timeout=2)
 
 

@@ -23,7 +23,7 @@ def main():
     ap.add_argument("--model", required=True, help="模型 config yaml")
     ap.add_argument("--image", required=True, help="测试图路径")
     ap.add_argument("--backend", default="pytorch")
-    ap.add_argument("--precision", default="fp32", choices=["fp32", "fp16"])
+    ap.add_argument("--precision", default="fp32", choices=["fp32", "fp16", "int8"])
     ap.add_argument("--runs", type=int, default=20, help="计时循环次数")
     ap.add_argument("--warmup", type=int, default=10)
     ap.add_argument("--save", default="", help="可视化结果输出路径（仅检测）")

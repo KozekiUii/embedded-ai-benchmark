@@ -3,9 +3,11 @@
 用法：
     python src/convert/build_trt.py --model configs/yolov8n.yaml --precision fp32
     python src/convert/build_trt.py --model configs/yolov8n.yaml --precision fp16
-    # INT8 见第 4 周（需 calibrator）
+    python src/convert/build_trt.py --model configs/yolov8n.yaml --precision int8 \
+        --calib-dir data/calib --calib-num 128
 
 注意：TX2 NX 内存 4GB 与 CPU 共享，workspace 默认 512MB，过大易 OOM。
+sm_62 支持 INT8 DP4A，量化有真实加速。
 """
 import argparse
 import os
@@ -56,11 +58,33 @@ def build(onnx_path, engine_path, precision, workspace_mb, calibrator=None):
     print(f"[trt] saved -> {engine_path}  ({len(data)/1e6:.1f} MB)")
 
 
+def make_calibrator(cfg, args, engine_path):
+    """构造 INT8 校准器：复用推理同款前处理。需要 pycuda context。"""
+    import pycuda.autoinit  # noqa: F401  创建 CUDA context（仅 INT8 路径需要）
+    from src.core.factory import build_processors
+    from src.convert.calibrator import EntropyCalibrator
+
+    pre, _ = build_processors(cfg)
+    h, w = cfg["input_size"]
+    cache_file = os.path.splitext(engine_path)[0] + ".cache"
+    return EntropyCalibrator(
+        image_dir=args.calib_dir,
+        preprocessor=pre,
+        input_size=(int(h), int(w)),
+        cache_file=cache_file,
+        batch_size=args.calib_batch,
+        max_images=args.calib_num,
+    )
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
     ap.add_argument("--precision", default="fp32", choices=["fp32", "fp16", "int8"])
     ap.add_argument("--workspace", type=int, default=512, help="workspace MB")
+    ap.add_argument("--calib-dir", default="data/calib", help="INT8 校准集目录")
+    ap.add_argument("--calib-num", type=int, default=128, help="校准图片数量")
+    ap.add_argument("--calib-batch", type=int, default=1)
     args = ap.parse_args()
 
     with open(args.model, "r", encoding="utf-8") as f:
@@ -71,7 +95,8 @@ def main():
     if not os.path.exists(onnx_path):
         raise FileNotFoundError(f"{onnx_path} 不存在，先在 azure-vm 跑 export_onnx.py 并 scp 过来")
 
-    build(onnx_path, engine_path, args.precision, args.workspace)
+    calibrator = make_calibrator(cfg, args, engine_path) if args.precision == "int8" else None
+    build(onnx_path, engine_path, args.precision, args.workspace, calibrator)
 
 
 if __name__ == "__main__":

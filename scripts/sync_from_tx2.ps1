@@ -4,7 +4,7 @@
 # engine/onnx 体积大且设备端现编，默认不拉（需要时手动 scp）
 
 $ErrorActionPreference = "Stop"
-$Remote   = "nvidia@tx2-nx"
+$Remote   = "tx2"   # ssh 直连别名（169.254.67.100，走网线）
 $RemoteDir = "~/embedded-ai-benchmark"
 $LocalDir = Split-Path -Parent $PSScriptRoot   # 仓库根目录
 
